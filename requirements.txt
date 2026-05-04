@@ -1,0 +1,24 @@
+# requirements.txt — OC-QSVM Benchmark (CPU installation)
+# Install: pip install -r requirements.txt
+#
+# Critical: never install qiskit-aer and qiskit-aer-gpu simultaneously.
+
+# ── Quantum simulation (CPU) ───────────────────────────────────────────────────
+# For GPU, remove this block and install qiskit-aer-gpu==0.15.1 instead.
+qiskit==1.4.3
+qiskit-aer==0.15.1
+
+# ── Machine learning ──────────────────────────────────────────────────────────
+scikit-learn>=1.2.0
+numpy>=1.23.0,<2.0.0        # numpy 2.x breaks some Qiskit/TF dependencies
+scipy>=1.10.0
+pandas>=1.5.0
+
+# ── Deep learning (Conv-AE, LSTM-AE, MSCRED) ─────────────────────────────────
+tensorflow>=2.12.0           # GPU auto-detected via CUDA; no extra config needed
+keras>=2.12.0
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+tqdm>=4.64.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
