@@ -62,7 +62,7 @@ oc-qsvm-skab/
 ├── mscred.py                  ← MSCRED
 │
 ├── core/                      ← model classes from SKAB repo
-│   ├── __init__.py
+│   ├── __init__.py            ← required imports (do not overwrite)
 │   ├── Conv_AE.py
 │   ├── LSTM_AE.py
 │   ├── MSCRED.py
@@ -77,10 +77,10 @@ oc-qsvm-skab/
 │   └── qIT/{train,test}/
 └── results/                   ← output CSVs (auto-created)
     ├── skab_results.csv
-    ├── skab_isolation_forest.csv
-    ├── skab_conv_ae.csv
-    ├── skab_lstm_ae.csv
-    └── skab_mscred.csv
+    ├── if_results.csv
+    ├── conv_ae_results.csv
+    ├── lstm_ae_results.csv
+    └── mscred_results.csv
 ```
 
 ---
@@ -90,10 +90,15 @@ oc-qsvm-skab/
 ### 1. Clone dependencies
 
 ```bash
-# SKAB dataset + core model classes
+# SKAB dataset — copy model class files into core/
 git clone https://github.com/waico/SKAB.git
-cp -r SKAB/core ./core
-touch core/__init__.py      # required for Python imports
+cp SKAB/core/Conv_AE.py \
+   SKAB/core/LSTM_AE.py \
+   SKAB/core/MSCRED.py \
+   SKAB/core/Isolation_Forest.py \
+   ./core/
+# core/__init__.py is already provided by this repository — do not overwrite it.
+# It contains the imports required for all baseline runners.
 
 # Quantum kernel implementation
 git clone https://github.com/AfraeA/q-anomaly.git
@@ -241,6 +246,18 @@ This guarantees PSD and is the standard approach in quantum kernel learning
 (Theis et al., 2023). Eigenvalue clipping followed by `fill_diagonal(K, 1)` was
 tested but re-introduces negative eigenvalues; Tikhonov is preferred.
 
+### Keras callbacks must be a list (MSCRED)
+
+The upstream SKAB implementation passes a bare callback object to `model.fit()`:
+```python
+# upstream — raises TypeError in Keras 2.x / 3.x
+callbacks=reduce_lr,
+```
+**Fix** (applied in `core/MSCRED.py`):
+```python
+callbacks=[reduce_lr],   # must be a list
+```
+
 ---
 
 ## Known Issues
@@ -270,11 +287,12 @@ pip cache purge
 pip install "qiskit==1.4.3" "qiskit-aer-gpu==0.15.1"
 ```
 
-
 ### `from core.X import X` fails
 
+`core/__init__.py` was accidentally overwritten (e.g. with `touch`).
+Restore it from the repository:
 ```bash
-touch core/__init__.py
+git checkout core/__init__.py
 ```
 
 ---
