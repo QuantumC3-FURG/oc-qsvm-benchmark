@@ -256,7 +256,7 @@ class MSCRED:
             X_train, Y_train,
             batch_size=batch_size,
             epochs=epochs,
-            callbacks=reduce_lr,
+            callbacks=[reduce_lr],
         )
 
     def predict(self, data):
